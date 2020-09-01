@@ -1,7 +1,21 @@
 import React from "react";
+import { Switch } from "react-router-dom";
+import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from "./components/PublicRoute";
+import SignIn from "./pages/SignIn";
+import Home from "./pages/Home";
 
 function App() {
-  return <h1>Hello</h1>;
+  return (
+    <Switch>
+      <PublicRoute exact path="/signin">
+        <SignIn />
+      </PublicRoute>
+      <PrivateRoute exact path="/">
+        <Home />
+      </PrivateRoute>
+    </Switch>
+  );
 }
 
 export default App;
