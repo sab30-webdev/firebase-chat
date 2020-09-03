@@ -18,7 +18,7 @@ export const ProfileProvider = ({ children }) => {
           const data = {
             name,
             createdAt,
-            id: authObj.uid,
+            uid: authObj.uid,
             email: authObj.email,
           };
           setProfile(data);

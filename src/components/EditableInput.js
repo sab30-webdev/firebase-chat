@@ -22,9 +22,7 @@ const EditableInput = ({
     if (trimmed === "") {
       Alert.info(emptyMsg, 4000);
       setIsEditable(true);
-    }
-
-    if (trimmed !== initialValue && trimmed !== "") {
+    } else {
       await onSave(trimmed);
       setIsEditable(false);
     }
