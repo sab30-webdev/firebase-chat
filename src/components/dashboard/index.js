@@ -1,8 +1,9 @@
 import React from "react";
-import { Drawer, Button, Divider, Alert } from "rsuite";
+import { Drawer, Button, Divider, Alert, Tag, Icon } from "rsuite";
 import { useProfile } from "../../context/profile.context";
 import EditableInput from "./../EditableInput";
 import { database } from "../../misc/firebase";
+import AvatarUploadBtn from "./AvatarUploadBtn";
 
 const Dashboard = ({ onSignOut }) => {
   const { profile } = useProfile();
@@ -28,6 +29,9 @@ const Dashboard = ({ onSignOut }) => {
 
       <Drawer.Body>
         <h3>Hey,{profile.name}</h3>
+        <Tag color="green" closable>
+          <Icon icon="google" /> Connected
+        </Tag>
         <Divider />
         <EditableInput
           name="nickname"
@@ -35,6 +39,7 @@ const Dashboard = ({ onSignOut }) => {
           onSave={onSave}
           label={<h6 className="mb-2">Nickname</h6>}
         />
+        <AvatarUploadBtn />
       </Drawer.Body>
 
       <Drawer.Footer>
