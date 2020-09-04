@@ -4,6 +4,7 @@ import useModalState from "./../../misc/custom-hooks";
 import AvatarEditor from "react-avatar-editor";
 import { storage, database } from "./../../misc/firebase";
 import { useProfile } from "../../context/profile.context";
+import ProfileAvatar from "./../ProfileAvatar";
 
 const getBlob = (canvas) => {
   return new Promise((resolve, reject) => {
@@ -62,47 +63,50 @@ const AvatarUploadBtn = () => {
 
   return (
     <div className="mt-3 text-center">
-      <label htmlFor="avatar">
-        Select new avatar
-        <input
-          id="avatar"
-          type="file"
-          className="d-none"
-          onChange={onFileInputChange}
-          accept="images/*"
-        />
-      </label>
+      <ProfileAvatar src={profile.avatar} name={profile.name} />
+      <div>
+        <label htmlFor="avatar">
+          Select new avatar
+          <input
+            id="avatar"
+            type="file"
+            className="d-none"
+            onChange={onFileInputChange}
+            accept="images/*"
+          />
+        </label>
 
-      <Modal show={isOpen} onHide={close}>
-        <Modal.Header>
-          <Modal.Title>Adjust and upload new avatar</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="d-flex justify-content-center align-items-center h-100">
-            {img && (
-              <AvatarEditor
-                ref={avatarEditorRef}
-                image={img}
-                width={200}
-                height={200}
-                border={10}
-                borderRadius={100}
-                rotate={0}
-              />
-            )}
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            block
-            appearance="ghost"
-            onClick={onUploadClick}
-            disabled={isLoading}
-          >
-            Upload new avatar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        <Modal show={isOpen} onHide={close}>
+          <Modal.Header>
+            <Modal.Title>Adjust and upload new avatar</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="d-flex justify-content-center align-items-center h-100">
+              {img && (
+                <AvatarEditor
+                  ref={avatarEditorRef}
+                  image={img}
+                  width={200}
+                  height={200}
+                  border={10}
+                  borderRadius={100}
+                  rotate={0}
+                />
+              )}
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              block
+              appearance="ghost"
+              onClick={onUploadClick}
+              disabled={isLoading}
+            >
+              Upload new avatar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
     </div>
   );
 };
