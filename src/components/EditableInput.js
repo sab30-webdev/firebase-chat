@@ -6,6 +6,7 @@ const EditableInput = ({
   label = null,
   onSave,
   emptyMsg = "Input is empty",
+  ...props
 }) => {
   const [value, setValue] = useState(initialValue);
   const [isEditable, setIsEditable] = useState(false);
@@ -32,7 +33,12 @@ const EditableInput = ({
     <div>
       {label}
       <InputGroup>
-        <Input disabled={!isEditable} value={value} onChange={onChange} />
+        <Input
+          disabled={!isEditable}
+          value={value}
+          onChange={onChange}
+          {...props}
+        />
         <InputGroup.Button onClick={onEditClick}>
           <Icon icon={isEditable ? "close" : "edit2"} />
         </InputGroup.Button>

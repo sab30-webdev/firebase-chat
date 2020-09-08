@@ -5,6 +5,7 @@ import AvatarEditor from "react-avatar-editor";
 import { storage, database } from "./../../misc/firebase";
 import { useProfile } from "../../context/profile.context";
 import ProfileAvatar from "./../ProfileAvatar";
+import { getUserUpdates } from "./../../misc/helpers";
 
 const getBlob = (canvas) => {
   return new Promise((resolve, reject) => {
@@ -34,6 +35,7 @@ const AvatarUploadBtn = () => {
   const onUploadClick = async () => {
     const canvas = avatarEditorRef.current.getImageScaledToCanvas();
     setIsLoading(true);
+
     try {
       const blob = await getBlob(canvas);
 
@@ -47,15 +49,19 @@ const AvatarUploadBtn = () => {
 
       const downloadUrl = await uploadAvatarResult.ref.getDownloadURL();
 
-      const userAvatarRef = database
-        .ref(`/profiles/${profile.uid}`)
-        .child("avatar");
+      const updates = await getUserUpdates(
+        profile.uid,
+        "avatar",
+        downloadUrl,
+        database
+      );
 
-      userAvatarRef.set(downloadUrl);
+      await database.ref().update(updates);
 
       setIsLoading(false);
       Alert.success("Avatar Uploaded", 4000);
     } catch (error) {
+      console.log(error);
       setIsLoading(false);
       Alert.error(error.message, 4000);
     }
@@ -63,7 +69,11 @@ const AvatarUploadBtn = () => {
 
   return (
     <div className="mt-3 text-center">
-      <ProfileAvatar src={profile.avatar} name={profile.name} />
+      <ProfileAvatar
+        className="width-200 height-200 img-fullsize font-huge"
+        src={profile.avatar}
+        name={profile.name}
+      />
       <div>
         <label htmlFor="avatar">
           Select new avatar

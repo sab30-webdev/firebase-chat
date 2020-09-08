@@ -2,13 +2,9 @@ import React from "react";
 import { Avatar } from "rsuite";
 import { getNameInitials } from "./../misc/helpers";
 
-const ProfileAvatar = ({ src, name }) => {
+const ProfileAvatar = ({ src, name, ...props }) => {
   return (
-    <Avatar
-      className="width-200 height-200 img-fullsize font-huge"
-      src={src}
-      circle
-    >
+    <Avatar src={src} circle {...props}>
       {getNameInitials(name)}
     </Avatar>
   );

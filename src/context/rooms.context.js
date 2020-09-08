@@ -4,7 +4,7 @@ import { transformToArrWithId } from "../misc/helpers";
 
 const RoomsContext = createContext();
 
-const RoomsProvider = ({ children }) => {
+export const RoomsProvider = ({ children }) => {
   const [rooms, setRooms] = useState(null);
 
   const roomListRef = database.ref("rooms");
@@ -17,13 +17,11 @@ const RoomsProvider = ({ children }) => {
     return () => {
       roomListRef.off();
     };
-  }, [roomListRef]);
+  }, []);
 
   return (
     <RoomsContext.Provider value={rooms}>{children}</RoomsContext.Provider>
   );
 };
-
-export default RoomsProvider;
 
 export const useRooms = () => useContext(RoomsContext);
