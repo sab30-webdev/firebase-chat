@@ -1,14 +1,57 @@
-import React from "react";
+import React, { memo } from "react";
 import ProfileAvatar from "../../ProfileAvatar";
 import TimeAgo from "timeago-react";
 import ProfileInfoBtnModal from "./ProfileInfoBtnModal";
 import PresenceDot from "../../PresenceDot";
+import { useHover, useMediaQuery } from "../../../misc/custom-hooks";
+import IconBtnControl from "./IconBtnControl";
+import { Button } from "rsuite";
+import { useCurrentRoom } from "../../../context/current-room.context";
+import { auth } from "./../../../misc/firebase";
+import ImgBtnModal from "./ImgBtnModal";
 
-const MessageItem = ({ message }) => {
-  const { author, createdAt, text } = message;
+const renderFileMessage = (file) => {
+  if (file.contentType.includes("image")) {
+    return (
+      <div className="height-220">
+        <ImgBtnModal src={file.url} fileName={file.name} />
+      </div>
+    );
+  }
+
+  if (file.contentType.includes("audio")) {
+    return (
+      <audio controls style={{ outline: "none" }}>
+        <source src={file.url} type="audio/mp3" />
+        Your browser does not support the audio element.
+      </audio>
+    );
+  }
+
+  return <a href={file.url}>Download {file.name}</a>;
+};
+
+const MessageItem = ({ message, handleAdmin, handleLike, handleDelete }) => {
+  const { author, createdAt, text, likes, likeCount, file } = message;
+
+  const isAdmin = useCurrentRoom((v) => v.isAdmin);
+  const admins = useCurrentRoom((v) => v.admins);
+
+  const isMsgAuthorAdmin = admins.includes(author.uid);
+  const isAuthor = auth.currentUser.uid === author.uid;
+  const canGrantAdmin = isAdmin && !isAuthor;
+
+  const [selfRef, isHovered] = useHover();
+  const isMobile = useMediaQuery("(max-width:992px)");
+  const canShowIcon = isMobile || isHovered;
+
+  const isLiked = likes && Object.keys(likes).includes(auth.currentUser.uid);
 
   return (
-    <li className="padded mb-1">
+    <li
+      className={`padded mb-1 cursor-pointer ${isHovered ? "bg-black-02" : ""}`}
+      ref={selfRef}
+    >
       <div className="d-flex align-items-center font-bolder mb-1">
         <PresenceDot uid={author.uid} />
 
@@ -23,18 +66,56 @@ const MessageItem = ({ message }) => {
           profile={author}
           appearance="link"
           className="p-0 ml-1 text-black"
-        />
+        >
+          {canGrantAdmin && (
+            <Button
+              block
+              color="blue"
+              onClick={() => {
+                handleAdmin(author.uid);
+              }}
+            >
+              {isMsgAuthorAdmin
+                ? "Remove admin permission"
+                : "Give admin in this room"}
+            </Button>
+          )}
+        </ProfileInfoBtnModal>
+
         <TimeAgo
           datetime={createdAt}
           className="font-normal text-black-45 ml-2"
         />
+
+        <IconBtnControl
+          {...(isLiked ? { color: "red" } : {})}
+          isVisible={canShowIcon}
+          iconName="heart"
+          tooltip="Like this message"
+          onClick={() => {
+            handleLike(message.id);
+          }}
+          badgeContent={likeCount}
+        />
+
+        {isAuthor && (
+          <IconBtnControl
+            isVisible={canShowIcon}
+            iconName="close"
+            tooltip="Delete this message"
+            onClick={() => {
+              handleDelete(message.id, file);
+            }}
+          />
+        )}
       </div>
 
       <div>
-        <span className="word-break-all">{text}</span>
+        {text && <span className="word-break-all">{text}</span>}
+        {file && renderFileMessage(file)}
       </div>
     </li>
   );
 };
 
-export default MessageItem;
+export default memo(MessageItem);

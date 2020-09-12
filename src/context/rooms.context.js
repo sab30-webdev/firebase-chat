@@ -17,6 +17,7 @@ export const RoomsProvider = ({ children }) => {
     return () => {
       roomListRef.off();
     };
+    // eslint-disable-next-line
   }, []);
 
   return (
